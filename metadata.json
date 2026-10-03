@@ -1,0 +1,9 @@
+{
+  "name": "DailyMart - Nearby Grocery Marketplace",
+  "description": "Discover nearby grocery shops, browse fresh essentials within 12 km, order with real-time tracking and fast local delivery.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

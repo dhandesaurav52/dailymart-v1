@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() { return request.auth != null; }
+    function imageUnder5Mb() { return request.resource.size < 5 * 1024 * 1024 && request.resource.contentType.matches('image/(jpeg|png|webp)'); }
+    match /shop-assets/{shopId}/{allPaths=**} {
+      allow read: if true;
+      allow write: if signedIn() && imageUnder5Mb()
+        && exists(/databases/(default)/documents/shopMembers/$(request.auth.uid + '_' + shopId))
+        && get(/databases/(default)/documents/shopMembers/$(request.auth.uid + '_' + shopId)).data.status == 'ACTIVE';
+    }
+    match /user-assets/{uid}/{allPaths=**} { allow read: if signedIn() && request.auth.uid == uid; allow write: if signedIn() && request.auth.uid == uid && imageUnder5Mb(); }
+    match /seller-documents/{uid}/{allPaths=**} { allow read, write: if signedIn() && request.auth.uid == uid; }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

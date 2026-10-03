@@ -1,0 +1,281 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile for customer, shop owner, or admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "role": { "type": "string", "enum": ["customer", "shop_owner", "admin"] },
+        "status": { "type": "string", "enum": ["ACTIVE", "SUSPENDED", "BLOCKED"] },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "address": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "role"]
+    },
+    "Shop": {
+      "title": "Shop",
+      "description": "Local grocery store or vendor",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "city": { "type": "string" },
+        "pincode": { "type": "string" },
+        "latitude": { "type": "number" },
+        "longitude": { "type": "number" },
+        "isOpen": { "type": "boolean" },
+        "manualOverride": { "type": "string" },
+        "verificationStatus": { "type": "string", "enum": ["PENDING", "VERIFIED", "REJECTED", "SUSPENDED"] },
+        "verifiedBy": { "type": "string" },
+        "verifiedAt": { "type": "string" },
+        "verificationNotes": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "totalRatings": { "type": "number" },
+        "deliveryRadius": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "minOrder": { "type": "number" },
+        "estimatedDeliveryTime": { "type": "string" },
+        "image": { "type": "string" },
+        "tags": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "ownerId", "latitude", "longitude", "isOpen"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Product item belonging to a specific shop",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "price": { "type": "number" },
+        "mrp": { "type": "number" },
+        "unit": { "type": "string" },
+        "image": { "type": "string" },
+        "stockQuantity": { "type": "number" },
+        "lowStockThreshold": { "type": "number" },
+        "inStock": { "type": "boolean" },
+        "isActive": { "type": "boolean" },
+        "isFeatured": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "shopId", "name", "price", "unit", "inStock"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Order placed by a customer for a single shop",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerPhone": { "type": "string" },
+        "deliveryAddress": { "type": "string" },
+        "customerLatitude": { "type": "number" },
+        "customerLongitude": { "type": "number" },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "shopOwnerId": { "type": "string" },
+        "subtotal": { "type": "number" },
+        "deliveryFee": { "type": "number" },
+        "discount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["COD", "ONLINE"] },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID", "COLLECTED", "FAILED"] },
+        "orderStatus": { "type": "string", "enum": ["PENDING", "SHOP_ACCEPTED", "PREPARING", "OUT_FOR_DELIVERY", "DELIVERED", "REJECTED", "CANCELLED"] },
+        "estimatedDeliveryTime": { "type": "string" },
+        "notes": { "type": "string" },
+        "adminActionReason": { "type": "string" },
+        "refundedAmount": { "type": "number" },
+        "inventoryDeducted": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "customerId", "shopId", "totalAmount", "orderStatus"]
+    },
+    "MerchantAccount": {
+      "title": "MerchantAccount",
+      "description": "Bank account & payout configuration for shop owner",
+      "type": "object",
+      "properties": {
+        "shopId": { "type": "string" },
+        "businessName": { "type": "string" },
+        "ownerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "businessAddress": { "type": "string" },
+        "gstin": { "type": "string" },
+        "pan": { "type": "string" },
+        "bankAccountHolder": { "type": "string" },
+        "bankName": { "type": "string" },
+        "ifsc": { "type": "string" },
+        "accountNumberMasked": { "type": "string" },
+        "status": { "type": "string", "enum": ["NOT_CONNECTED", "PENDING_VERIFICATION", "VERIFIED", "SUSPENDED", "REJECTED"] },
+        "payoutStatus": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "platformCommissionRate": { "type": "number" },
+        "connectedAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["shopId", "businessName", "ownerName", "bankAccountHolder", "status"]
+    },
+    "PaymentRecord": {
+      "title": "PaymentRecord",
+      "description": "Payment and payout reconciliation record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "shopId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["COD", "ONLINE"] },
+        "paymentStatus": { "type": "string", "enum": ["PENDING", "PAID", "COLLECTED", "FAILED", "REFUNDED"] },
+        "platformFee": { "type": "number" },
+        "merchantAmount": { "type": "number" },
+        "payoutStatus": { "type": "string", "enum": ["PENDING", "PROCESSING", "PAID", "FAILED", "ON_HOLD", "PENDING_COLLECTION"] },
+        "payoutProcessedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "orderId", "shopId", "amount", "paymentMethod", "paymentStatus"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Global grocery taxonomy category",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "icon": { "type": "string" },
+        "image": { "type": "string" },
+        "displayOrder": { "type": "number" },
+        "isActive": { "type": "boolean" }
+      },
+      "required": ["id", "name", "slug", "isActive"]
+    },
+    "Dispute": {
+      "title": "Dispute",
+      "description": "Customer order support and dispute resolution ticket",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "disputeId": { "type": "string" },
+        "orderId": { "type": "string" },
+        "orderNumber": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "shopId": { "type": "string" },
+        "shopName": { "type": "string" },
+        "issueType": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["OPEN", "UNDER_REVIEW", "RESOLVED", "REJECTED"] },
+        "resolution": { "type": "string" },
+        "refundAmount": { "type": "number" },
+        "adminNotes": { "type": "string" },
+        "resolvedBy": { "type": "string" },
+        "resolvedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "disputeId", "orderId", "customerId", "shopId", "status"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "Administrative audit trail of sensitive marketplace actions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "adminId": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "adminRole": { "type": "string" },
+        "action": { "type": "string" },
+        "resourceType": { "type": "string" },
+        "resourceId": { "type": "string" },
+        "details": { "type": "string" },
+        "reason": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "adminId", "action", "resourceType", "resourceId", "timestamp"]
+    },
+    "PlatformSettings": {
+      "title": "PlatformSettings",
+      "description": "Global marketplace operational configurations",
+      "type": "object",
+      "properties": {
+        "platformName": { "type": "string" },
+        "supportEmail": { "type": "string" },
+        "supportPhone": { "type": "string" },
+        "defaultDeliveryRadiusKm": { "type": "number" },
+        "defaultCommissionRate": { "type": "number" },
+        "defaultDeliveryFee": { "type": "number" },
+        "minOrderAmount": { "type": "number" },
+        "isCodEnabled": { "type": "boolean" },
+        "autoCancelTimeoutMins": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["platformName", "defaultDeliveryRadiusKm", "defaultCommissionRate"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "UserProfile" },
+      "description": "Stores user profiles and roles"
+    },
+    "/shops/{shopId}": {
+      "schema": { "$ref": "Shop" },
+      "description": "Stores grocery shops, business hours, and delivery settings"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "Product" },
+      "description": "Stores products linked to specific shops with inventory"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "Order" },
+      "description": "Stores customer marketplace orders"
+    },
+    "/merchantAccounts/{shopId}": {
+      "schema": { "$ref": "MerchantAccount" },
+      "description": "Stores merchant payout settings & bank account details"
+    },
+    "/payments/{paymentId}": {
+      "schema": { "$ref": "PaymentRecord" },
+      "description": "Stores payment and settlement records"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "Category" },
+      "description": "Stores global product taxonomy categories"
+    },
+    "/disputes/{disputeId}": {
+      "schema": { "$ref": "Dispute" },
+      "description": "Stores customer disputes and resolutions"
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "AuditLog" },
+      "description": "Stores immutable admin audit log entries"
+    },
+    "/platformSettings/{settingId}": {
+      "schema": { "$ref": "PlatformSettings" },
+      "description": "Stores marketplace commission and radius configurations"
+    }
+  }
+}

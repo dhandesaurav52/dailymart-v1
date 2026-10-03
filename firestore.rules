@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function admin() {
+      return signedIn() && (
+        request.auth.token.platformRole in ['SUPER_ADMIN', 'OPERATIONS_ADMIN', 'FINANCE_ADMIN', 'SUPPORT_ADMIN'] ||
+        request.auth.token.admin == true ||
+        request.auth.token.email in ['admin@dailymart.com', 'dhandesaurav37@gmail.com'] ||
+        request.auth.token.email.matches('.*admin@.*')
+      );
+    }
+
+    function operationsAdmin() {
+      return admin();
+    }
+
+    function financeAdmin() {
+      return admin();
+    }
+
+    function supportAdmin() {
+      return admin();
+    }
+
+    function isShopOwner(shopId) {
+      return signedIn() && (
+        exists(/databases/$(database)/documents/shops/$(shopId)) &&
+        get(/databases/$(database)/documents/shops/$(shopId)).data.ownerId == request.auth.uid
+      );
+    }
+
+    function isShopMember(shopId) {
+      return signedIn() && (
+        isShopOwner(shopId) ||
+        exists(/databases/$(database)/documents/shopMembers/$(request.auth.uid + '_' + shopId)) ||
+        admin()
+      );
+    }
+
+    // 1. Users
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if isSelf(uid) || admin();
+    }
+
+    // 2. Shops catalog (Publicly readable for marketplace browsing)
+    match /shops/{shopId} {
+      allow read: if true;
+      allow create: if signedIn();
+      allow update, delete: if isShopMember(shopId) || admin();
+    }
+
+    // 3. Products catalogue (Publicly readable)
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if signedIn();
+    }
+
+    // 4. Categories
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if admin() || signedIn();
+    }
+
+    // 5. Orders
+    match /orders/{orderId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if signedIn();
+      allow delete: if admin();
+    }
+
+    // 6. Order Payments
+    match /orderPayments/{paymentId} {
+      allow read, write: if signedIn();
+    }
+
+    // 7. Seller Applications
+    match /sellerApplications/{appId} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update, delete: if signedIn();
+    }
+
+    // 8. Shop Members (Riders, Managers, Staff)
+    match /shopMembers/{memberId} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+
+    // 9. Delivery Assignments
+    match /deliveryAssignments/{assignmentId} {
+      allow read, write: if signedIn();
+    }
+
+    // 10. Notifications
+    match /notifications/{notificationId} {
+      allow read, write: if signedIn();
+    }
+
+    // 11. Merchant Accounts & Settings
+    match /merchantAccounts/{shopId} {
+      allow read, write: if signedIn();
+    }
+
+    // 12. Disputes
+    match /disputes/{disputeId} {
+      allow read, write: if signedIn();
+    }
+
+    // 13. Audit Logs
+    match /auditLogs/{logId} {
+      allow read: if admin();
+      allow create: if signedIn();
+      allow update, delete: if false;
+    }
+
+    // 14. Platform Settings
+    match /platformSettings/{settingId} {
+      allow read: if true;
+      allow write: if admin() || signedIn();
+    }
+
+    // 15. Admin Users
+    match /adminUsers/{adminId} {
+      allow read: if signedIn();
+      allow write: if admin();
+    }
+
+    // Default fallback
+    match /{document=**} {
+      allow read, write: if signedIn();
+    }
+  }
+}
